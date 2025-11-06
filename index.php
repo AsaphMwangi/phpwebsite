@@ -174,14 +174,7 @@ $user = $_SESSION['user'] ?? null;
     </section>
 </main>
 
-<footer>
-    <div class="container">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
-            <div>&copy; <?php echo date('Y'); ?> MyPHPSite. All rights reserved.</div>
-            <div style="color:var(--muted)">Built with ❤️ and PHP (single-file template)</div>
-        </div>
-    </div>
-</footer>
+
 
 </body>
 </html>
