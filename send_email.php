@@ -1,5 +1,6 @@
 <?php
-require_once 'vendor/autoload.php'; // include Brevo SDK
+require_once __DIR__ . '/brevo-php/vendor/autoload.php';
+
 
 use Brevo\Client\Api\TransactionalEmailsApi;
 use Brevo\Client\Configuration;
