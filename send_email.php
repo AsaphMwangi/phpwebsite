@@ -1,5 +1,8 @@
 <?php
-require_once __DIR__ . '/brevo-php/vendor/autoload.php';
+require_once __DIR__ . '/brevo-php/lib/Api/TransactionalEmailsApi.php';
+require_once __DIR__ . '/brevo-php/lib/Configuration.php';
+require_once __DIR__ . '/brevo-php/lib/Model/SendSmtpEmail.php';
+require_once __DIR__ . '/brevo-php/lib/ObjectSerializer.php';
 
 
 use Brevo\Client\Api\TransactionalEmailsApi;
