@@ -1,12 +1,11 @@
 <?php
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+require_once 'vendor/autoload.php'; // include Brevo SDK
 
-// Include PHPMailer files manually
-require 'phpmailer/src/Exception.php';
-require 'phpmailer/src/PHPMailer.php';
-require 'phpmailer/src/SMTP.php';
+use Brevo\Client\Api\TransactionalEmailsApi;
+use Brevo\Client\Configuration;
+use Brevo\Client\Model\SendSmtpEmail;
 
+// Check if form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $firstName = htmlspecialchars($_POST['first-name']);
     $lastName  = htmlspecialchars($_POST['last-name']);
@@ -15,40 +14,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $subject   = htmlspecialchars($_POST['_subject']);
     $message   = htmlspecialchars($_POST['message']);
 
-    $mail = new PHPMailer(true);
+    // Configure Brevo client with your API key
+    $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', 'pcTBLxXEaYkNzrC4');
+    $apiInstance = new TransactionalEmailsApi(new GuzzleHttp\Client(), $config);
 
-    try {
-        // SMTP configuration
-        $mail->isSMTP();
-        $mail->Host       = 'smtp-relay.brevo.com';
-        $mail->SMTPAuth   = true;
-        $mail->Username   = '9aeb9d001@smtp-brevo.com'; 
-        $mail->Password   = 'pcTBLxXEaYkNzrC4';           
-        $mail->SMTPSecure = 'tls';                        
-        $mail->Port       = 587;                            
-
-        // Sender and recipient settings
-        $mail->setFrom('asaphmwangi1973@gmail.com>', 'Website Contact Form');
-        $mail->addAddress('asaphmwangi1973@gmail.com', 'Admin'); // Recipient
-        $mail->addReplyTo($email, "$firstName $lastName");   // Reply to sender
-
-        // Email content
-        $mail->isHTML(true);
-        $mail->Subject = "📩 New Message: " . $subject;
-        $mail->Body    = "
+    // Create email object
+    $sendSmtpEmail = new SendSmtpEmail([
+        'subject' => "📩 New Message: $subject",
+        'sender' => [
+            'name' => 'Website Contact Form',
+            'email' => 'asaphmwangi1973@gmail.com' // must be verified in Brevo
+        ],
+        'to' => [
+            ['email' => 'asaphmwangi1973@gmail.com', 'name' => 'Asaph Maina']
+        ],
+        'replyTo' => [
+            'email' => $email,
+            'name' => "$firstName $lastName"
+        ],
+        'htmlContent' => "
             <h2>New Contact Form Submission</h2>
             <p><strong>First Name:</strong> $firstName</p>
             <p><strong>Last Name:</strong> $lastName</p>
             <p><strong>Email:</strong> $email</p>
             <p><strong>Phone:</strong> $phone</p>
             <p><strong>Message:</strong><br>$message</p>
-        ";
+        ",
+        'textContent' => "From: $firstName $lastName ($email)\nPhone: $phone\n\n$message"
+    ]);
 
-        // Send the email
-        $mail->send();
+    try {
+        $result = $apiInstance->sendTransacEmail($sendSmtpEmail);
         echo "✅ Message sent successfully!";
     } catch (Exception $e) {
-        echo "❌ Message could not be sent. Error: {$mail->ErrorInfo}";
+        echo '❌ Email could not be sent. Error: ', $e->getMessage();
     }
 }
 ?>
